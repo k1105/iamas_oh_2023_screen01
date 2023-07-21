@@ -8,12 +8,12 @@ import { Keypoint } from "@tensorflow-models/hand-pose-detection";
 import { convertHandToHandpose } from "../lib/converter/convertHandToHandpose";
 import { dotHand } from "../lib/p5/dotHand";
 import { isFront } from "../lib/calculator/isFront";
-// import { Monitor } from "../components/Monitor";
+import { Monitor } from "../components/Monitor";
 import { detectThumbUpDown } from "../lib/calculator/detectThumbUpDown";
 
 type Props = {
   handpose: MutableRefObject<Hand[]>;
-  setConcented: Dispatch<SetStateAction<boolean>>;
+  setConsented: Dispatch<SetStateAction<boolean>>;
 };
 
 let leftHand: Keypoint[] = [];
@@ -33,7 +33,7 @@ const Sketch = dynamic(import("react-p5"), {
   ssr: false,
 });
 
-export const ConsentForm = ({ handpose, setConcented }: Props) => {
+export const ConsentForm = ({ handpose, setConsented }: Props) => {
   let handposeHistory: {
     left: Handpose[];
     right: Handpose[];
@@ -46,6 +46,7 @@ export const ConsentForm = ({ handpose, setConcented }: Props) => {
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
+    answerCount = 0;
     p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(canvasParentRef);
     p5.stroke(220);
     p5.fill(255);
@@ -162,16 +163,22 @@ export const ConsentForm = ({ handpose, setConcented }: Props) => {
       }
       if (!isAnswered) {
         isAnswered = true;
-        answerCount = p5.millis();
       }
     } else {
       isAnswered = false;
-      answerCount = p5.millis();
     }
+
+    if (!isAnswered) {
+      answerCount = 0;
+    }
+
+    debugLog.current.push({ label: "isAnswered", value: isAnswered });
+    debugLog.current.push({ label: "answerCount", value: answerCount });
     p5.push();
     p5.translate(p5.width / 2, p5.height / 2 + 50);
     p5.noStroke();
-    if (answerCount > 0 && p5.millis() - answerCount > 0.3) {
+    if (isAnswered) {
+      answerCount += p5.deltaTime;
       p5.textAlign(p5.CENTER);
       if (isApproved) {
         p5.text("承認する", 0, 70);
@@ -184,14 +191,11 @@ export const ConsentForm = ({ handpose, setConcented }: Props) => {
         50,
         50,
         0,
-        Math.min(
-          ((p5.millis() - answerCount) / 1000 / 3) * 2 * Math.PI,
-          2 * Math.PI
-        )
+        Math.min((answerCount / 1000 / 2) * 2 * Math.PI, 2 * Math.PI)
       );
-      if ((p5.millis() - answerCount) / 1000 / 3 > 1) {
+      if (answerCount > 2000) {
         //一周したら
-        setConcented(true);
+        setConsented(true);
       }
     }
 

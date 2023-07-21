@@ -48,6 +48,9 @@ export default function App() {
         if (lostCountRef.current > 5) {
           predictionsRef.current = [];
         }
+        if (lostCountRef.current > 100) {
+          setConsented(false);
+        }
       }
     }
 
@@ -97,7 +100,7 @@ export default function App() {
                 return (
                   <ConsentForm
                     handpose={predictionsRef}
-                    setConcented={setConsented}
+                    setConsented={setConsented}
                   />
                 );
               } else {
