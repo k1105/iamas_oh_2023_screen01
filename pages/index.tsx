@@ -3,10 +3,11 @@ import "@tensorflow/tfjs";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import Webcam from "react-webcam";
 import { ConsentForm } from "../sketch/ConsentForm";
-import { Interaction20 } from "../sketch/Interaction20";
-import { InteractionPile } from "../sketch/InteractionPile";
+import { CircleUnitTower } from "../sketch/CircleUnitTower";
+import { UnitDiagram } from "../sketch/UnitDiagram";
 import { PixelInput } from "@tensorflow-models/hand-pose-detection/dist/shared/calculators/interfaces/common_interfaces";
 import Head from "next/head";
+import { CrossUnitTower } from "../sketch/CrossUnitTower";
 
 export default function App() {
   const webcamRef = useRef<Webcam>(null);
@@ -17,8 +18,9 @@ export default function App() {
   const [scene, setScene] = useState<number>(0);
   const [consented, setConsented] = useState<boolean>(false);
   const headerTexts = [
-    { eng: "Interaction020", text: "界面を確かめる" },
-    { eng: "Interaction030", text: "積み重ねる" },
+    { eng: "Interaction-Unit", text: "指を変換してみる" },
+    { eng: "Interaction-Circle", text: "積み重ねる-01" },
+    { eng: "Interaction-Cross", text: "積み重ねる-02" },
   ];
 
   const lostCountRef = useRef(0);
@@ -106,7 +108,7 @@ export default function App() {
               } else {
                 if (scene == 0) {
                   return (
-                    <Interaction20
+                    <UnitDiagram
                       handpose={predictionsRef}
                       scene={scene}
                       setScene={setScene}
@@ -114,7 +116,15 @@ export default function App() {
                   );
                 } else if (scene == 1) {
                   return (
-                    <InteractionPile
+                    <CircleUnitTower
+                      handpose={predictionsRef}
+                      scene={scene}
+                      setScene={setScene}
+                    />
+                  );
+                } else if (scene == 2) {
+                  return (
+                    <CrossUnitTower
                       handpose={predictionsRef}
                       scene={scene}
                       setScene={setScene}
