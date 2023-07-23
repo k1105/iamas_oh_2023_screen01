@@ -160,7 +160,7 @@ export const ConsentForm = ({ handpose, setConsented }: Props) => {
       (typeof isLeftApproved == "boolean" && isRightApproved == null) ||
       (typeof isRightApproved == "boolean" && isRightApproved == isLeftApproved)
     ) {
-      if (isRightApproved || isLeftApproved) {
+      if (isRightApproved == true || isLeftApproved == true) {
         isApproved = true;
       } else {
         isApproved = false;
@@ -215,14 +215,14 @@ export const ConsentForm = ({ handpose, setConsented }: Props) => {
       <div
         style={{
           textAlign: "center",
-          lineHeight: "1.5rem",
-          fontFamily: "monospace",
+          lineHeight: "2rem",
+          // fontFamily: "monospace",
           position: "absolute",
-          top: "20vh",
+          bottom: "10vh",
           width: "100vw",
         }}
       >
-        <p>
+        <p style={{ fontSize: "1.2rem" }}>
           研究を目的とし、体験中の手指の動きを動画で記録してもよろしいですか？
           <br />
           ご協力いただける場合、記録した動画は分析のみに使用し、一般公開は一切行いません。
