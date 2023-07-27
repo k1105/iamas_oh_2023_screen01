@@ -6,9 +6,8 @@ import { getSmoothedHandpose } from "../lib/getSmoothedHandpose";
 import { updateHandposeHistory } from "../lib/updateHandposeHistory";
 import { Keypoint } from "@tensorflow-models/hand-pose-detection";
 import { convertHandToHandpose } from "../lib/converter/convertHandToHandpose";
-import { updateLost } from "../lib/updateLost";
-import { updateStyleIndex } from "../lib/updateStyleIndex";
 import { circleIndicator } from "../lib/p5/circleIndicator";
+import { LostManager } from "../lib/LostManagerClass";
 
 type Props = {
   handpose: MutableRefObject<Hand[]>;
@@ -30,11 +29,7 @@ export const CrossUnitTower = ({ handpose, scene, setScene }: Props) => {
     left: Handpose[];
     right: Handpose[];
   } = { left: [], right: [] };
-  let lost: { state: boolean; prev: boolean; at: number } = {
-    state: false,
-    prev: false,
-    at: 0,
-  };
+  let lost = new LostManager();
   let detectedOnce = false;
 
   const preload = (p5: p5Types) => {
@@ -68,7 +63,7 @@ export const CrossUnitTower = ({ handpose, scene, setScene }: Props) => {
       detectedOnce = true;
     }
     if (detectedOnce) {
-      lost = updateLost(handpose.current, lost);
+      lost.update(handpose.current);
       if (lost.state) {
         p5.push();
         p5.translate(p5.width - 100, 100);

@@ -7,8 +7,7 @@ import { updateHandposeHistory } from "../lib/updateHandposeHistory";
 import { Keypoint } from "@tensorflow-models/hand-pose-detection";
 import { convertHandToHandpose } from "../lib/converter/convertHandToHandpose";
 import { isFront } from "../lib/calculator/isFront";
-import { updateLost } from "../lib/updateLost";
-import { updateStyleIndex } from "../lib/updateStyleIndex";
+import { LostManager } from "../lib/LostManagerClass";
 import { circleIndicator } from "../lib/p5/circleIndicator";
 
 type Props = {
@@ -23,11 +22,7 @@ let leftHand: Keypoint[] = [];
 let rightHand: Keypoint[] = [];
 let leftHandOpacity: number = 0;
 let rightHandOpacity: number = 0;
-let lost: { state: boolean; prev: boolean; at: number } = {
-  state: false,
-  prev: false,
-  at: 0,
-};
+let lost = new LostManager();
 
 const columnSize = 250;
 const rowSize = 250;
@@ -95,7 +90,7 @@ export const UnitDiagram = ({ handpose, scene, setScene }: Props) => {
       detectedOnce = true;
     }
     if (detectedOnce) {
-      lost = updateLost(handpose.current, lost);
+      lost.update(handpose.current);
       if (lost.state) {
         p5.push();
         p5.translate(p5.width - 100, 100);

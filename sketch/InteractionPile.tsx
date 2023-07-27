@@ -6,8 +6,8 @@ import { getSmoothedHandpose } from "../lib/getSmoothedHandpose";
 import { updateHandposeHistory } from "../lib/updateHandposeHistory";
 import { Keypoint } from "@tensorflow-models/hand-pose-detection";
 import { convertHandToHandpose } from "../lib/converter/convertHandToHandpose";
-import { updateLost } from "../lib/updateLost";
 import { updateStyleIndex } from "../lib/updateStyleIndex";
+import { LostManager } from "../lib/LostManagerClass";
 
 type Props = {
   handpose: MutableRefObject<Hand[]>;
@@ -29,11 +29,7 @@ export const InteractionPile = ({ handpose, scene, setScene }: Props) => {
     left: Handpose[];
     right: Handpose[];
   } = { left: [], right: [] };
-  let lost: { state: boolean; prev: boolean; at: number } = {
-    state: false,
-    prev: false,
-    at: 0,
-  };
+  let lost = new LostManager();
 
   const debugLog = useRef<{ label: string; value: any }[]>([]);
 
@@ -49,7 +45,7 @@ export const InteractionPile = ({ handpose, scene, setScene }: Props) => {
   };
 
   const draw = (p5: p5Types) => {
-    lost = updateLost(handpose.current, lost);
+    lost.update(handpose.current);
     setScene(updateStyleIndex(lost, scene, 2));
 
     const rawHands: {
